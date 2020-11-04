@@ -39,6 +39,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                 decoration: InputDecoration(
                   labelText: "Exercise Name",
                   labelStyle: textStyle,
+                  isDense: true,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(5),
                   ),
@@ -58,6 +59,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                 decoration: InputDecoration(
                   labelText: "Weight",
                   labelStyle: textStyle,
+                  isDense: true,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(5),
                   ),
@@ -77,6 +79,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                 decoration: InputDecoration(
                   labelText: "Sets",
                   labelStyle: textStyle,
+                  isDense: true,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(5),
                   ),
@@ -96,6 +99,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                 decoration: InputDecoration(
                   labelText: "Reps",
                   labelStyle: textStyle,
+                  isDense: true,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(5),
                   ),
@@ -112,7 +116,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                   //Save
                   Expanded(
                     child: RaisedButton(
-                      color: Theme.of(context).primaryColorDark,
+                      color: Theme.of(context).primaryColor,
                       textColor: Theme.of(context).primaryColorLight,
                       child: Text(
                         "Save",
@@ -131,7 +135,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                   //Delete
                   Expanded(
                     child: RaisedButton(
-                      color: Theme.of(context).primaryColorDark,
+                      color: Theme.of(context).primaryColor,
                       textColor: Theme.of(context).primaryColorLight,
                       child: Text(
                         "Delete",
