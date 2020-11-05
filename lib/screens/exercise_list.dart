@@ -59,7 +59,7 @@ class _ExerciseListState extends State<ExerciseList> {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return ExerciseDetail(title);
     } )
-    );
+    );// Navigator
   }
 
 }
