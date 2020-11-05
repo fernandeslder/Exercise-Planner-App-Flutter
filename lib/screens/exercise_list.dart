@@ -1,3 +1,4 @@
+import 'package:exercise_planner_flutter/screens/exercise_detail.dart';
 import 'package:flutter/material.dart';
 
 class ExerciseList extends StatefulWidget {
@@ -23,6 +24,7 @@ class _ExerciseListState extends State<ExerciseList> {
         child: Icon(Icons.add),
         onPressed: () {
           debugPrint("HelloActionButton");
+          navigateToDetail("Add Exercise");
         },
       ),
     );
@@ -45,10 +47,19 @@ class _ExerciseListState extends State<ExerciseList> {
               trailing: Icon(Icons.check, color: Colors.black,),
             onTap: () {
                 debugPrint("HelloExer");
+                navigateToDetail("Edit Exercise");
             },
             )
           );
       },
     );
   }
+
+  void navigateToDetail(String title) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return ExerciseDetail(title);
+    } )
+    );
+  }
+
 }

@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
 
 class ExerciseDetail extends StatefulWidget {
+
+  String appBarTitle;
+  ExerciseDetail(this.appBarTitle);
+
   @override
-  _ExerciseDetailState createState() => _ExerciseDetailState();
+  _ExerciseDetailState createState() => _ExerciseDetailState(this.appBarTitle);
 }
 
 class _ExerciseDetailState extends State<ExerciseDetail> {
+
+  String appBarTitle;
 
   TextEditingController nameController = TextEditingController();
   TextEditingController weightController = TextEditingController();
   TextEditingController setsController = TextEditingController();
   TextEditingController repsController = TextEditingController();
+
+  _ExerciseDetailState(this.appBarTitle);
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +27,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Edit Exercise"),
+        title: Text(appBarTitle),
       ),
 
       body: Padding(
