@@ -1,29 +1,45 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
+import 'package:exercise_planner_flutter/models/exercise.dart';
+import 'package:exercise_planner_flutter/utils/database_helper.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 class ExerciseDetail extends StatefulWidget {
 
-  String appBarTitle;
-  ExerciseDetail(this.appBarTitle);
+  final String appBarTitle;
+  final Exercise exercise;
+  ExerciseDetail(this.exercise, this.appBarTitle);
 
   @override
-  _ExerciseDetailState createState() => _ExerciseDetailState(this.appBarTitle);
+  _ExerciseDetailState createState() => _ExerciseDetailState(this.exercise, this.appBarTitle);
 }
 
 class _ExerciseDetailState extends State<ExerciseDetail> {
 
+  DatabaseHelper helper = DatabaseHelper();
+
   String appBarTitle;
+  Exercise exercise;
 
   TextEditingController nameController = TextEditingController();
   TextEditingController weightController = TextEditingController();
   TextEditingController setsController = TextEditingController();
   TextEditingController repsController = TextEditingController();
 
-  _ExerciseDetailState(this.appBarTitle);
+  _ExerciseDetailState(this.exercise, this.appBarTitle);
 
   @override
   Widget build(BuildContext context) {
 
     TextStyle textStyle = Theme.of(context).textTheme.headline6;
+
+    nameController.text = exercise.name;
+    weightController.text = exercise.weight;
+    setsController.text = exercise.sets.toString();
+    repsController.text = exercise.reps.toString();
+
+
 
     return WillPopScope(
       onWillPop: () {
@@ -54,6 +70,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                   style: textStyle,
                   onChanged: (value){
                     debugPrint("name TextField");
+                    updateName();
                   },
                   decoration: InputDecoration(
                     labelText: "Exercise Name",
@@ -74,9 +91,10 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                   style: textStyle,
                   onChanged: (value){
                     debugPrint("weight TextField");
+                    updateWeight();
                   },
                   decoration: InputDecoration(
-                    labelText: "Weight",
+                    labelText: "Weight (Optional)",
                     labelStyle: textStyle,
                     isDense: true,
                     border: OutlineInputBorder(
@@ -91,9 +109,12 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                 padding: EdgeInsets.only(top: 15, left: 10, right: 10),
                 child: TextField(
                   controller: setsController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                   style: textStyle,
                   onChanged: (value){
                     debugPrint("sets TextField");
+                    updateSets();
                   },
                   decoration: InputDecoration(
                     labelText: "Sets",
@@ -111,9 +132,12 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                 padding: EdgeInsets.only(top: 15, left: 10, right: 10),
                 child: TextField(
                   controller: repsController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
                   style: textStyle,
                   onChanged: (value){
                     debugPrint("reps TextField");
+                    updateReps();
                   },
                   decoration: InputDecoration(
                     labelText: "Reps",
@@ -144,6 +168,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                         onPressed: () {
                           setState(() {
                             debugPrint("SaveButton");
+                            _save();
                           });
                         },
                       ),
@@ -163,6 +188,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                         onPressed: () {
                           setState(() {
                             debugPrint("DeleteButton");
+                            _delete();
                           });
                         },
                       ),
@@ -181,7 +207,74 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
   }
 
   void moveToLastScreen() {
-    Navigator.pop(context);
+    Navigator.pop(context, true);
   }
+
+  void updateName(){
+    exercise.name = nameController.text;
+  }
+
+  void updateWeight(){
+    exercise.weight = weightController.text;
+  }
+
+  void updateSets(){
+    exercise.sets = int.parse(setsController.text);
+  }
+
+  void updateReps(){
+    exercise.reps = int.parse(repsController.text);
+  }
+
+  void _save() async {
+    moveToLastScreen();
+    int result;
+
+    if(exercise.id != null){
+      result = await helper.updateExercise(exercise);
+    }
+    else{
+      result = await helper.insertExercise(exercise);
+    }
+
+    if (result != 0) {  // Success
+      _showAlertDialog('Status', 'Exercise Saved Successfully');
+    }
+    else {  // Failure
+      _showAlertDialog('Status', 'Problem Saving Exercise');
+    }
+  }
+
+  void _delete() async {
+    moveToLastScreen();
+
+    if (exercise.id == null) {
+      _showAlertDialog('Status', 'No Exercise was deleted');
+      return;
+    }
+
+    int result = await helper.deleteExercise(exercise.id);
+    if (result != 0) {
+      _showAlertDialog('Status', 'Exercise Deleted Successfully');
+    }
+    else {
+      _showAlertDialog('Status', 'Error Occurred while Deleting Exercise');
+    }
+  }
+
+
+  void _showAlertDialog(String title, String message) {
+
+    AlertDialog alertDialog = AlertDialog(
+      title: Text(title),
+      content: Text(message),
+    );
+    showDialog(
+        context: context,
+        builder: (_) => alertDialog
+    );
+  }
+
+
 
 }

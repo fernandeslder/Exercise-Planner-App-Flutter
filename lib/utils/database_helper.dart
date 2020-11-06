@@ -64,7 +64,7 @@ class DatabaseHelper{
     return result;
   }
 
-  Future<int> deleteNote(int id) async {
+  Future<int> deleteExercise(int id) async {
     var db = await this.database;
     int result = await db.rawDelete('DELETE FROM $exerciseTable WHERE $colId = $id');
     return result;
@@ -77,5 +77,16 @@ class DatabaseHelper{
     return result;
   }
 
+  Future<List<Exercise>> getExerciseList() async {
+    var exerciseMapList = await getExerciseMapList();
+    int count = exerciseMapList.length;
+    List<Exercise> exerciseList = List<Exercise>();
+
+    for (int i = 0; i < count; i++) {
+      exerciseList.add(Exercise.fromMapObject(exerciseMapList[i]));
+    }
+
+    return exerciseList;
+  }
 
 }

@@ -1,7 +1,12 @@
-import 'package:exercise_planner_flutter/screens/exercise_detail.dart';
 import 'package:flutter/material.dart';
+import 'dart:async';
+import 'package:exercise_planner_flutter/models/exercise.dart';
+import 'package:exercise_planner_flutter/screens/exercise_detail.dart';
+import 'package:exercise_planner_flutter/utils/database_helper.dart';
+import 'package:sqflite/sqflite.dart';
 
 class ExerciseList extends StatefulWidget {
+
   @override
   _ExerciseListState createState() => _ExerciseListState();
 }
@@ -9,10 +14,17 @@ class ExerciseList extends StatefulWidget {
 class _ExerciseListState extends State<ExerciseList> {
 
   int count = 0;
-
+  DatabaseHelper databaseHelper = DatabaseHelper();
+  List<Exercise> exerciseList;
 
   @override
   Widget build(BuildContext context) {
+
+    if(exerciseList == null){
+      exerciseList = List<Exercise>();
+      updateListView();
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Exercise Planner"),
@@ -24,7 +36,7 @@ class _ExerciseListState extends State<ExerciseList> {
         child: Icon(Icons.add),
         onPressed: () {
           debugPrint("HelloActionButton");
-          navigateToDetail("Add Exercise");
+          navigateToDetail(Exercise('', 0, 0), "Add Exercise");
         },
       ),
     );
@@ -39,15 +51,19 @@ class _ExerciseListState extends State<ExerciseList> {
             color: Colors.white,
             child : ListTile(
               leading: CircleAvatar(
-                child: Icon(Icons.fitness_center),
+                child: getWIcon(this.exerciseList[position].weight),
               ),
-
-              title: Text("Dummy Title", style: titleStyle),
-              subtitle: Text("Dummy Date"),
-              trailing: Icon(Icons.check, color: Colors.black,),
+              title: Text(this.exerciseList[position].name, style: titleStyle),
+              subtitle: Text("Sets:${this.exerciseList[position].sets} Reps:${this.exerciseList[position].reps} Weight:${this.exerciseList[position].weight}"),
+              trailing: GestureDetector(
+                child: Icon(Icons.check, color: Colors.black,),
+                onTap: () {
+                  _delete(context, this.exerciseList[position]);
+                },
+              ),
             onTap: () {
                 debugPrint("HelloExer");
-                navigateToDetail("Edit Exercise");
+                navigateToDetail(this.exerciseList[position], "Edit Exercise");
             },
             )
           );
@@ -55,11 +71,49 @@ class _ExerciseListState extends State<ExerciseList> {
     );
   }
 
-  void navigateToDetail(String title) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return ExerciseDetail(title);
-    } )
-    );// Navigator
+  void navigateToDetail(Exercise exercise, String title) async {
+    bool result = await Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return ExerciseDetail(exercise, title);
+    }));
+
+    if(result == true){
+      updateListView();
+    }
+  }
+
+  Icon getWIcon(String weight){
+    if(weight == null){
+      return Icon(Icons.directions_run);
+    }
+    else{
+      return Icon(Icons.fitness_center);
+    }
+  }
+
+  void _delete(BuildContext context, Exercise exercise) async{
+    int result = await databaseHelper.deleteExercise(exercise.id);
+    if(result != 0){
+      _showSnackBar(context, "Exercise Completed");
+      updateListView();
+    }
+  }
+
+  void _showSnackBar(BuildContext context, String message){
+    final snackBar = SnackBar(content: Text(message), duration: Duration(seconds: 2));
+    Scaffold.of(context).showSnackBar(snackBar);
+  }
+
+  void updateListView() {
+    final Future<Database> dbFuture = databaseHelper.initializeDatabase();
+    dbFuture.then((database){
+      Future<List<Exercise>> exerciseListFuture = databaseHelper.getExerciseList();
+      exerciseListFuture.then((exerciseList){
+        setState(() {
+          this.exerciseList = exerciseList;
+          this.count = exerciseList.length;
+        });
+      });
+    });
   }
 
 }
