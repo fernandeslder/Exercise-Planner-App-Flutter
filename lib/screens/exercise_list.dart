@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:exercise_planner_flutter/models/exercise.dart';
 import 'package:exercise_planner_flutter/screens/exercise_detail.dart';
+import 'package:exercise_planner_flutter/screens/curr_location.dart';
 import 'package:exercise_planner_flutter/utils/database_helper.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -32,12 +33,27 @@ class _ExerciseListState extends State<ExerciseList> {
 
       body: getExerciseListView(),
 
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {
-          debugPrint("HelloActionButton");
-          navigateToDetail(Exercise('', 0, 0), "Add Exercise");
-        },
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            child: Icon(Icons.map),
+            heroTag: 'map',
+            onPressed: () {
+              debugPrint("HelloActionButton");
+              navigateToMap();
+            },
+          ),
+          SizedBox(height: 10, width: 10),
+          FloatingActionButton(
+            heroTag: 'add',
+            child: Icon(Icons.add),
+            onPressed: () {
+              debugPrint("HelloActionButton");
+              navigateToDetail(Exercise('', 0, 0), "Add Exercise");
+            },
+          ),
+        ],
       ),
     );
   }
@@ -80,6 +96,14 @@ class _ExerciseListState extends State<ExerciseList> {
       updateListView();
     }
   }
+
+  void navigateToMap() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => CurrLoc()),
+    );
+  }
+
 
   Icon getWIcon(String weight){
     if(weight == null){

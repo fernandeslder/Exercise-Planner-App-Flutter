@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:exercise_planner_flutter/screens/exercise_list.dart';
 import 'package:exercise_planner_flutter/screens/exercise_detail.dart';
+import 'package:exercise_planner_flutter/screens/curr_location.dart';
 
 void main() {
   runApp(MyApp());
