@@ -4,6 +4,7 @@ import 'package:exercise_planner_flutter/models/exercise.dart';
 import 'package:exercise_planner_flutter/utils/database_helper.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class ExerciseDetail extends StatefulWidget {
 
@@ -16,6 +17,24 @@ class ExerciseDetail extends StatefulWidget {
 }
 
 class _ExerciseDetailState extends State<ExerciseDetail> {
+  FlutterLocalNotificationsPlugin fltrNotification;
+
+  @override
+  void initState() {
+    super.initState();
+    var androidInitilize = new AndroidInitializationSettings('app_icon');
+    var iOSinitilize = new IOSInitializationSettings();
+    var initilizationsSettings =  new InitializationSettings(androidInitilize, iOSinitilize);
+    fltrNotification = new FlutterLocalNotificationsPlugin();
+    fltrNotification.initialize(initilizationsSettings);
+  }
+  Future _showNotification(String mssg) async {
+    var androidDetails = new AndroidNotificationDetails("ID", "Exercise Planner App", "Exercise", importance: Importance.Low);
+    var iSODetails = new IOSNotificationDetails();
+    var generalNotificationDetails = new NotificationDetails(androidDetails, iSODetails);
+
+    await fltrNotification.show(0, "Exercise Planner App", mssg, generalNotificationDetails, payload: mssg);
+  }
 
   DatabaseHelper helper = DatabaseHelper();
 
@@ -255,7 +274,8 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
 
     int result = await helper.deleteExercise(exercise.id);
     if (result != 0) {
-      _showAlertDialog('Status', 'Exercise Deleted Successfully');
+      //_showAlertDialog('Status', 'Exercise Deleted Successfully');
+      _showNotification('Exercise Deleted Successfully');
     }
     else {
       _showAlertDialog('Status', 'Error Occurred while Deleting Exercise');
@@ -274,6 +294,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
         builder: (_) => alertDialog
     );
   }
+
 
 
 
