@@ -28,7 +28,7 @@
         </receiver>
         <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
         <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCpJvsl6aZcIiMGL2Z8525875YG2bKB19U"/>
+            android:value="API KEY"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
